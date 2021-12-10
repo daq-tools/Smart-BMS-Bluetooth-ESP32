@@ -254,6 +254,7 @@ void printBasicInfo() //debug all data to uart
     TRACE;
     commSerial.printf("Total voltage: %f\n", (float)packBasicInfo.Volts / 1000);
     commSerial.printf("Amps: %f\n", (float)packBasicInfo.Amps / 1000);
+    commSerial.printf("Watts: %f\n", (float)packBasicInfo.Watts); /// 1000);
     commSerial.printf("CapacityAh: %f\n", (float)packBasicInfo.CapacityAh / 1000);
     commSerial.printf("CapacityRemainAh: %f\n", (float)packBasicInfo.CapacityRemainAh / 1000);
     commSerial.printf("CapacityRemainPercent: %f\n", (float)packBasicInfo.CapacityRemainPercent);
