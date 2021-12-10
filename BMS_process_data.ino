@@ -46,10 +46,45 @@ bool processBasicInfo(packBasicInfoStruct *output, byte *data, unsigned int data
 {
     TRACE;
     // Expected data len
-    if (dataLen != 0x1B)
+    //commSerial.println("---dataLen---");
+	//commSerial.println(dataLen);
+	if (dataLen != 0x1B)
     {
+		//commSerial.println("---------------(dataLen wrong)------------------------");
         return false;
     }
+
+	//commSerial.println(data[0]);
+	//commSerial.println(data[1]);
+
+	//int Int32;
+    //Int32 = (Int32 << 8) + data[0];
+    //Int32 = (Int32 << 8) + data[1];
+	//commSerial.println(Int32);
+    //return *((float*)&Int32);
+
+	//commSerial.println(data[2]);
+	//commSerial.println(data[3]);
+
+	//int Int33;
+    //Int33 = (Int33 << 8) + data[2];
+    //Int33 = (Int33 << 8) + data[3];
+	//commSerial.println(Int33);
+
+	//commSerial.println(data[4]);
+	//commSerial.println(data[5]);
+
+	//Int33 = 0;
+    //Int33 = (Int33 << 8) + data[4];
+    //Int33 = (Int33 << 8) + data[5];
+	//commSerial.println(Int33);
+
+	//Int33 = 0;
+    //Int33 = (Int33 << 8) + data[4];
+    //Int33 = (Int33 << 8) + data[5];
+	//Int33 = (Int33 << 8) + data[6];
+	//commSerial.println(Int33);
+
 
     output->Volts = ((uint32_t)two_ints_into16(data[0], data[1])) * 10; // Resolution 10 mV -> convert to milivolts   eg 4895 > 48950mV
     output->Amps = ((int32_t)two_ints_into16(data[2], data[3])) * 10;   // Resolution 10 mA -> convert to miliamps
@@ -60,6 +95,10 @@ bool processBasicInfo(packBasicInfoStruct *output, byte *data, unsigned int data
     output->CapacityRemainAh = ((uint32_t)two_ints_into16(data[4], data[5])) * 10;
     output->CapacityRemainPercent = ((uint16_t)data[19]);
     output->Cycles = ((uint8_t)two_ints_into16(data[8], data[9]));
+    //output->CapacityRemainPercent = ((uint16_t)two_ints_into16(data[19], data[20]));
+    //output->CapacityRemainPercent2 = ((uint16_t)data[19]);
+
+    //output->Cycles8 = ((uint8_t)data[8]);
 
     output->CapacityRemainWh = (output->CapacityRemainAh * c_cellNominalVoltage) / 1000000 * packCellInfo.NumOfCells;
 
@@ -68,6 +107,16 @@ bool processBasicInfo(packBasicInfoStruct *output, byte *data, unsigned int data
     output->BalanceCodeLow = (two_ints_into16(data[12], data[13]));
     output->BalanceCodeHigh = (two_ints_into16(data[14], data[15]));
     output->MosfetStatus = ((byte)data[20]);
+
+	//int i;
+
+	//for(i=0; i<sizeof(data); i++){
+    //printHex(data[i]);
+	//}
+
+	//commSerial.println("---------------sizeof(data)------------------------");
+	//commSerial.println(sizeof(data));
+	//delay(500);
 
     return true;
 };
@@ -259,11 +308,19 @@ void printBasicInfo() //debug all data to uart
     commSerial.printf("CapacityRemainAh: %f\n", (float)packBasicInfo.CapacityRemainAh / 1000);
     commSerial.printf("CapacityRemainPercent: %f\n", (float)packBasicInfo.CapacityRemainPercent);
     commSerial.printf("Cycles: %f\n", (float)packBasicInfo.Cycles);
+    //commSerial.printf("Cycles8: %d\n", packBasicInfo.Cycles8);
     commSerial.printf("Temp1: %f\n", (float)packBasicInfo.Temp1 / 10);
     commSerial.printf("Temp2: %f\n", (float)packBasicInfo.Temp2 / 10);
     commSerial.printf("Balance Code Low: 0x%x\n", packBasicInfo.BalanceCodeLow);
     commSerial.printf("Balance Code High: 0x%x\n", packBasicInfo.BalanceCodeHigh);
     commSerial.printf("Mosfet Status: 0x%x\n", packBasicInfo.MosfetStatus);
+}
+
+void printHex(uint8_t num) {
+  char hexCar[2];
+
+  sprintf(hexCar, "%02X", num);
+  commSerial.print(hexCar);
 }
 
 void printCellInfo() //debug all data to uart
