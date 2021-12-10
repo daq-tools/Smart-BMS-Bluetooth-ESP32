@@ -187,54 +187,6 @@ bool bmsProcessPacket(byte *packet)
     return result;
 }
 
-bool bmsCollectPacket_uart(byte *packet) //unused function to get packet directly from uart
-{
-    TRACE;
-#define packet1stByte 0xdd
-#define packet2ndByte 0x03
-#define packet2ndByte_alt 0x04
-#define packetLastByte 0x77
-    bool retVal;
-    byte actualByte;
-    static byte previousByte;
-    static bool inProgress = false;
-    static byte bmsPacketBuff[40];
-    static byte bmsPacketBuffCount;
-
-    if (bmsSerial.available() > 0) //data in serial buffer available
-    {
-        actualByte = bmsSerial.read();
-        if (previousByte == packetLastByte && actualByte == packet1stByte) //got packet footer
-        {
-            memcpy(packet, bmsPacketBuff, bmsPacketBuffCount);
-            inProgress = false;
-            retVal = true;
-        }
-        if (inProgress) //filling bytes to output buffer
-        {
-            bmsPacketBuff[bmsPacketBuffCount] = actualByte;
-            bmsPacketBuffCount++;
-            retVal = false;
-        }
-
-        if (previousByte == packet1stByte && (actualByte == packet2ndByte || actualByte == packet2ndByte_alt)) //got packet header
-        {
-            bmsPacketBuff[0] = previousByte;
-            bmsPacketBuff[1] = actualByte;
-            bmsPacketBuffCount = 2; // for next pass. [0] and [1] are filled already
-            inProgress = true;
-            retVal = false;
-        }
-
-        previousByte = actualByte;
-    }
-    else
-    {
-        retVal = false;
-    }
-    return retVal;
-}
-
 bool bleCollectPacket(char *data, uint32_t dataSize) // reconstruct packet from BLE incomming data, called by notifyCallback function
 {
     TRACE;
