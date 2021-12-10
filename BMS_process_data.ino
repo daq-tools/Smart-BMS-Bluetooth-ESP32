@@ -96,7 +96,6 @@ bool processCellInfo(packCellInfoStruct *output, byte *data, unsigned int dataLe
             _cellMin = output->CellVolt[i];
         }
 
-        output->CellColor[i] = getPixelColorHsv(mapHue(output->CellVolt[i], c_cellAbsMin, c_cellAbsMax), 255, 255);
     }
     output->CellMin = _cellMin;
     output->CellMax = _cellMax;
@@ -139,7 +138,6 @@ bool processCellInfo(packCellInfoStruct *output, byte *data, unsigned int dataLe
     for (uint8_t q = 0; q < output->NumOfCells; q++)
     {
         uint32_t disbal = abs(output->CellMedian - output->CellVolt[q]);
-        output->CellColorDisbalance[q] = getPixelColorHsv(mapHue(disbal, c_cellMaxDisbalance, 0), 255, 255);
     }
     return true;
 };

@@ -47,7 +47,6 @@ class MyClientCallback : public BLEClientCallbacks
     {
         BLE_client_connected = false;
         commSerial.println("onDisconnect");
-        lcdDisconnect();
     }
 };
 
@@ -63,11 +62,6 @@ void bleRequestData()
         if (connectToServer())
         {
             commSerial.println("We are now connected to the BLE Server.");
-            lcdConnected();
-        }
-        else
-        {
-            lcdConnectionFailed();
         }
         doConnect = false;
     }
@@ -81,7 +75,6 @@ void bleRequestData()
         if ((currentMillis - previousMillis >= interval || newPacketReceived)) //every time period or when packet is received
         {
             previousMillis = currentMillis;
-            showInfoLcd();
 
             if (toggle) //alternate info3 and info4
             {
@@ -139,43 +132,36 @@ bool connectToServer()
 {
     TRACE;
     commSerial.print("Forming a connection to ");
-    lcdConnectingStatus(0);
     commSerial.println(myDevice->getAddress().toString().c_str());
     BLEClient *pClient = BLEDevice::createClient();
     commSerial.println(" - Created client");
-    lcdConnectingStatus(1);
     pClient->setClientCallbacks(new MyClientCallback());
 
     // Connect to the remove BLE Server.
     pClient->connect(myDevice); // if you pass BLEAdvertisedDevice instead of address, it will be recognized type of peer device address (public or private)
     commSerial.println(" - Connected to server");
-    lcdConnectingStatus(2);
     // Obtain a reference to the service we are after in the remote BLE server.
     //BLERemoteService*
     pRemoteService = pClient->getService(serviceUUID);
     if (pRemoteService == nullptr)
     {
         commSerial.print("Failed to find our service UUID: ");
-        lcdConnectingStatus(3);
         commSerial.println(serviceUUID.toString().c_str());
         pClient->disconnect();
         return false;
     }
     commSerial.println(" - Found our service");
-    lcdConnectingStatus(4);
 
     // Obtain a reference to the characteristic in the service of the remote BLE server.
     pRemoteCharacteristic = pRemoteService->getCharacteristic(charUUID_rx);
     if (pRemoteCharacteristic == nullptr)
     {
         commSerial.print("Failed to find our characteristic UUID: ");
-        lcdConnectingStatus(5);
         commSerial.println(charUUID_rx.toString().c_str());
         pClient->disconnect();
         return false;
     }
     commSerial.println(" - Found our characteristic");
-    lcdConnectingStatus(6);
     // Read the value of the characteristic.
     if (pRemoteCharacteristic->canRead())
     {
@@ -185,6 +171,7 @@ bool connectToServer()
     }
 
     if (pRemoteCharacteristic->canNotify())
+		commSerial.print("The Device can notify");
         pRemoteCharacteristic->registerForNotify(notifyCallback);
 
     BLE_client_connected = true;
