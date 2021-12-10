@@ -23,6 +23,7 @@ typedef struct
 	int32_t Watts;   // unit 1W
 	uint32_t CapacityRemainAh;
 	uint32_t CapacityAh;
+	uint8_t Cycles;
 	uint16_t CapacityRemainPercent; //unit 1%
 	uint32_t CapacityRemainWh; 	//unit Wh
 	uint16_t Temp1;				   //unit 0.1C
